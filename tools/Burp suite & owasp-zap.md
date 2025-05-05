@@ -90,3 +90,6 @@ Reads OpenAPI/Swagger files and tests API endpoints.
 Shows a list of all security issues found, with details and fix tips.
 
 ---
+## 📚 Further Reading
+
+- [Burp Suite vs OWASP ZAP – A Comparison Series](https://medium.com/@Ekenejoseph/burp-suite-vs-owasp-zap-a-comparison-series-8e34162c42e6) by Ekene Joseph
