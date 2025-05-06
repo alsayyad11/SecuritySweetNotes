@@ -328,3 +328,4 @@ These are low-level device paths that allow access to raw disk volumes:
 \\.\CdRom0\autorun.inf  
 ```
 
+[Directory Traversal - PayloadsAllTheThings (GitHub)](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Directory%20Traversal#directory-traversal)
