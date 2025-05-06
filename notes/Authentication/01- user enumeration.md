@@ -167,3 +167,5 @@ This allows an attacker to determine whether a **username** or **email address**
 5. **Use a Single Authentication Screen**: If possible, show **username**, **password**, and **MFA** input fields on the same screen, so attackers can’t tell if a **username** is valid based on the authentication flow.
 
 ---
+
+[OWASP Web Security Testing Guide - Testing for Account Enumeration and Guessable User Account](https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/03-Identity_Management_Testing/04-Testing-for-Account-Enumeration-and-Guessable-User-Account)
