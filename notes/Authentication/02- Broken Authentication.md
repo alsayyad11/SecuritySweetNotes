@@ -1,3 +1,4 @@
+
 ## What is Authentication?
 
 **Authentication** is the process of verifying the identity of a user or system. It’s a critical part of web security, ensuring that only legitimate users can access certain resources or services.
