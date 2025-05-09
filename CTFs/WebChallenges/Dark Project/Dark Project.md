@@ -56,11 +56,11 @@ php://filter/convert.base64-encode/resource=index
 - `convert.base64-encode`: Applies a Base64 encoding filter.
 - `resource=index`: Specifies the file to apply the filter on (`index.php`).
 
- **Result**: Instead of executing the `index.php` script normally, the server returns its raw source code **encoded in Base64**.
+ > Instead of executing the `index.php` script normally, the server returns its raw source code **encoded in Base64**.
 
 ---
 
-## 5. Conclusion – What Did We Learn?
+## 5. summary 
 
 This lab was a textbook case of **source code disclosure via PHP filters**. Let’s break it down:
 
