@@ -32,6 +32,10 @@
 ---
 ---
 ---
+> Any upload file feild must check the file extension & file type & file content 
+---
+---
+---
 
 ## Solution 
 
