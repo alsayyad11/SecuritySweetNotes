@@ -1,6 +1,5 @@
-# 🐘 Command Injection in PHP — Full Guide
 
-## ❌ Dangerous Functions in PHP
+##  Dangerous Functions in PHP
 
 There are several PHP functions that execute **system-level commands**:
 
@@ -43,13 +42,13 @@ ping 127.0.0.1; ls
 
 ---
 
-## 🛡️ How to Prevent It
+##  How to Prevent It
 
 ###  1. Use `escapeshellarg()`
 
 This function **escapes user input** so it can't break the command.
 
-✅ Fixed version:
+ Fixed version:
 
 ```php
 <?php
@@ -74,7 +73,7 @@ Which the shell treats as a **single harmless string**, not a command.
 
 ---
 
-### 🛡️ 2. Use `escapeshellcmd()` (for the command itself)
+###  2. Use `escapeshellcmd()` (for the command itself)
 
 * Use this if you're allowing users to **choose a command**, like from a dropdown.
 * It escapes **dangerous characters in the command name**.
@@ -86,7 +85,7 @@ system($command);  // Better, but still risky if cmd is user-controlled
 
 ---
 
-### 🛡️ 3. Validate Input Using a Whitelist
+###  3. Validate Input Using a Whitelist
 
 Don’t let users type anything.
 
@@ -104,7 +103,7 @@ if (in_array($_GET['ip'], $allowedIps)) {
 
 ---
 
-### 🛡️ 4. Don’t Use Shell Commands If Not Needed
+### 4. Don’t Use Shell Commands If Not Needed
 
 Ask yourself:
 
