@@ -71,6 +71,3 @@ Disallow: /hidden-login/
 * Visited: `https://victim.com/hidden-login/` → Secret login page not linked elsewhere
 
 ---
-
-لو حابب أحوله كمان لملف `.md` جاهز أو PDF، قولي وابعتهولك فورًا.
-```
