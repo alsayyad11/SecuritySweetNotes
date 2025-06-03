@@ -1,4 +1,4 @@
-#  Command Injectio
+#  Command Injection
 - is an attack that executes arbitrary commands on the host OS via a vulnerable application.
 - This happens when user input (from forms, cookies, headers, etc.) is passed directly to the system shell without proper validation.
 - The attacker-supplied commands are usually executed with the privileges of the vulnerable application.
