@@ -46,7 +46,6 @@ we can log in using the following credentials:
 * Then Access `/admin` and delete the user `carlos`.
 
 
-  أكيد يا باشا، شوف النسخة المدمجة دي بشكل احترافي ومنسق:
 
 ---
 
