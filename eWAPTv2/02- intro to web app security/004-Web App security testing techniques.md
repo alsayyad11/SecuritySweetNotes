@@ -1,8 +1,3 @@
-To ensure that your web application is secure, you must test it.
- Functional testing checks if your app works as expected, but security testing checks if your app is **safe** from attackers. There are different methods for this, each with a different approach, purpose, and value.
-
----
-
 ### 1. Static Application Security Testing (SAST)
 
 **SAST** is a type of **white-box testing**. This means it analyzes the internal code structure of your application without running it. It inspects the source code or compiled code to detect security issues.
