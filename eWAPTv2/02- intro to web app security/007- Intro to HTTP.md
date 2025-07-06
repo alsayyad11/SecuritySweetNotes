@@ -8,6 +8,8 @@ HTTP is **stateless**, meaning each request from the client to the server is ind
 
 HTTP operates on top of the **TCP (Transmission Control Protocol)**, which ensures reliable delivery of packets between client and server.
 
+![h](https://github.com/user-attachments/assets/e43f68e8-c694-467d-b4bb-c7282ea0ce5e)
+
 ---
 
 ### Client-Server Architecture
