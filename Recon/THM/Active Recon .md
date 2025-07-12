@@ -252,3 +252,7 @@ The tools covered here give practical ways to:
 * Gather **tech stack info** (browser + extensions)
 
 ---
+
+<img width="1917" height="867" alt="Screenshot 2025-07-12 213439" src="https://github.com/user-attachments/assets/5d038839-3b81-46eb-bd74-9bf61b6443a8" />
+
+<img width="1919" height="752" alt="Screenshot 2025-07-12 174714" src="https://github.com/user-attachments/assets/7f882c87-de9f-43dc-a486-deb4c0f2d5ac" />
