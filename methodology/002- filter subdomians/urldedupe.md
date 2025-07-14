@@ -42,13 +42,13 @@ urldedupe < input.txt > output.txt
 or using a pipe:
 
 ```bash
-cat input.txt | urldedupe > output.txt
+cat input.txt -s | urldedupe > output.txt
 ```
 
 for more than one file :
 
 ```bash
-cat input1.txt input2.txt | urldedupe > output.txt
+cat input1.txt input2.txt -s | urldedupe > output.txt
 ```
 
 **Example:**
