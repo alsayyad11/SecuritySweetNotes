@@ -94,12 +94,3 @@ subextreme -d google.com -r -o google_subextreme.txt
 ```
 
 ---
-
-### Combine Results and Remove Duplicates
-
-After running all tools, merge the results and remove duplicates:
-
-```bash
-cat google_sublist3r.txt google_subfinder.txt google_subextreme.txt | sort -u > google_all_subdomains.txt
-```
-
