@@ -1,8 +1,4 @@
 
-This methodology applies to all cases where file upload features can be abused to trigger **Stored XSS** using SVG, HTML, or script-containing payloads.
-
----
-
 ## 1. Identify Upload Functionality
 
 Look for any upload feature in the target app, such as:
@@ -105,7 +101,7 @@ Explore additional bypass vectors:
 
 ---
 
-## 🛠 Tools Commonly Used
+##  Tools Commonly Used
 
 | Tool                      | Purpose                                  |
 | ------------------------- | ---------------------------------------- |
