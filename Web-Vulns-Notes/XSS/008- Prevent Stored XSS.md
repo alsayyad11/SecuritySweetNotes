@@ -41,7 +41,7 @@ Avoid APIs like:
 * `eval`
 * `setTimeout`/`setInterval` with strings
 
-✅ Use:
+ Use:
 
 * `textContent`
 * `setAttribute`
