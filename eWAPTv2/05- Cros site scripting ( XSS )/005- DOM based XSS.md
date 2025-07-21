@@ -125,3 +125,16 @@ Using `textContent` ensures no code will execute, even if the user input contain
 
 ---
 
+
+### DOM XSS HackerOne Reports
+
+| Vulnerability & Company                                    | Description                                                                                | Report ID                                                        |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| **Grab / parcel.grab.com – DOM XSS via fragment**          | Client-side script reads `location.hash` unsafely and injects it into the DOM, causing XSS | [#248560](https://hackerone.com/reports/248560)  |
+| **MyCrypto – DOM XSS in "connected successfully" message** | The success message prints unfiltered input from URL, leading to XSS                       | [#324303](https://hackerone.com/reports/324303) |
+| **Uber – DOM XSS via PrettyPhoto plugin**                  | Vulnerable plugin on eng.uber.com allows execution via crafted input                       | [#125498](https://hackerone.com/reports/125498)  |
+| **SecNews – Search page DOM XSS**                          | Search query inserted into HTML without proper encoding, enabling DOM XSS                  | [#168165](https://hackerone.com/reports/168165)  |
+| **DuckDuckGo – DOM XSS on 50x.html**                       | `location.search` is inserted via `innerHTML` into error page, triggering XSS              | [#405191](https://hackerone.com/reports/405191)  |
+| **HackerOne – Self DOM XSS in contact form**               | The contact form on hackerone.com reads user input and injects it without sanitization     | [#406587](https://hackerone.com/reports/406587)  |
+
+---
