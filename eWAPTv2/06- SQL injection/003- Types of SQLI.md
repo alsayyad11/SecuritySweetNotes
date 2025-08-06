@@ -1,3 +1,6 @@
+
+<img width="1198" height="586" alt="S" src="https://github.com/user-attachments/assets/aa202b57-8792-4ebf-a893-198faf5ead40" />
+
 ## 1. In-Band SQL Injection
 
 Attack and data retrieval occur over the **same channel**. These are often easiest to exploit.
