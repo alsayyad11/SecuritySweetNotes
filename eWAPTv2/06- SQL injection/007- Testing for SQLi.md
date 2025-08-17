@@ -348,3 +348,14 @@ Manual testing is powerful, but automation speeds things up.
   * Second-order (stored payloads)
 * Fingerprint DB type for DB-specific payloads.
 * Use automation tools like **SQLMap** to confirm and exploit.
+
+---
+### **1. Cheat Sheets**
+
+* [PayloadBox SQLi Payload List](https://github.com/payloadbox/sql-injection-payload-list) → A large collection of ready-to-use SQLi payloads.
+* [PortSwigger SQLi Cheat Sheet](https://portswigger.net/web-security/sql-injection/cheat-sheet) → Well-structured reference of SQLi payloads and techniques.
+
+### **2. OWASP**
+
+* [OWASP Web Security Testing Guide (WSTG)](https://owasp.org/www-project-web-security-testing-guide/) → Official guide with detailed methodologies for identifying and exploiting SQLi.
+
