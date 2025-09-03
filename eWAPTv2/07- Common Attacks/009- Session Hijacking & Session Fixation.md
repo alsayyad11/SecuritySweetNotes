@@ -118,6 +118,3 @@ An attacker sends an email to a victim containing a link with a fixed session to
 * **Educate Users:** About phishing, public Wi-Fi risks, and safe browsing habits.
 
 ---
-
-
-لو عايز أساعدك بتحويل الشرح لـ Markdown جاهز للجيت هب أو PDF، قولي وأنا أجهزهولك!
