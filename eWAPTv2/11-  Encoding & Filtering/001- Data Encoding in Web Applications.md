@@ -96,6 +96,8 @@ A **charset** defines the collection of symbols and how they map to numbers (cod
 * `a` = 97.
 * `0` = 48.
 
+<img width="1200" height="401" alt="S" src="https://github.com/user-attachments/assets/d0714b61-8ea2-4af1-9d92-9c21e59ae771" />
+
 You can see the full mapping at: [ASCII Table](https://www.ascii-code.com/)
 
 ---
