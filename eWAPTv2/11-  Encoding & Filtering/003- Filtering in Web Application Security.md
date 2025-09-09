@@ -279,7 +279,7 @@ UNION SELECT * FROM users
 | Output Filtering   | Prevent malicious code execution     | HTML/URL/Base64 encoding        | Encode `<script>` as `&lt;script&gt;`                   |
 | Advanced Controls  | Additional security layers           | CSP, CSRF tokens, WAFs          | Block inline scripts, validate requests, filter traffic |
 
-** Takeaways:**
+**Takeaways:**
 
 * Filtering is **the first line of defense** against injection and scripting attacks.
 * **Input filtering** ensures malicious data doesn’t enter the system.
