@@ -2,7 +2,7 @@
 
  [Access The Lab](https://tryhackme.com/room/activerecon)
 
-# **Active Reconnaissance **
+# **Active Reconnaissance**
 
 <img width="326" height="70" alt="image" src="https://github.com/user-attachments/assets/f16b6c9a-0612-45af-98a6-3ac08980e4d5" />
 
