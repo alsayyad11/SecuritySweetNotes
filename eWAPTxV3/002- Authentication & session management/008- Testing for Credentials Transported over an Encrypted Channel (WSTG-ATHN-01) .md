@@ -1,4 +1,3 @@
-
 ## Purpose (why this test exists)
 
 Ensure that **all authentication credentials and other sensitive authentication material** (passwords, one-time passwords, session tokens, refresh tokens, secret answers, API keys used for login, etc.) are transmitted only over **an encrypted channel** (HTTPS/TLS). If credentials travel over plaintext (HTTP) or through channels that can be observed (unprotected redirects, insecure referrers, mixed content), attackers can capture them and take over accounts. ([OWASP Foundation][1])
@@ -202,7 +201,7 @@ GET http://example.com/login?username=alice&password=123456
 
 ## [OWASP reference](https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/04-Authentication_Testing/01-Testing_for_Credentials_Transported_over_an_Encrypted_Channel)
 
-* OWASP Web Security Testing Guide — Testing for Credentials Transported over an Encrypted Channel (WSTG-ATHN-01). ([OWASP Foundation][1])
-* OWASP WSTG — Testing for Weak Transport Layer Security (guidance on TLS versions/ciphers). ([OWASP Foundation][2])
+* OWASP Web Security Testing Guide — Testing for Credentials Transported over an Encrypted Channel (WSTG-ATHN-01). 
+* OWASP WSTG — Testing for Weak Transport Layer Security (guidance on TLS versions/ciphers). 
 
 ---
