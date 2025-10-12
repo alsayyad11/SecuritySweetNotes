@@ -393,7 +393,7 @@ GET session:abcd1234
 
 ---
 
-## 10. Concrete end-to-end example (combining best practices)
+## 10. Concrete end-to-end example 
 
 **Scenario**: SPA + API + Redis session store + refresh tokens.
 
