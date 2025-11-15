@@ -243,3 +243,187 @@ Steps:
 This is the exact flaw caused by **failing to handle unconventional input**.
 
 ---
+
+# **How to Prevent “Failing to Handle Unconventional Input”**
+
+## **1. Enforce Strict Server‑Side Validation (Never Trust Client-Side)**
+
+Front‑end validation is cute for user experience, but **completely useless for security**.
+You must validate *every single value* again on the server.
+
+Server‑side checks should verify:
+
+* Allowed ranges (min/max)
+* Allowed formats
+* Data types
+* Business rules (e.g., no negative quantity)
+* Logical constraints (e.g., balance must be ≥ amount)
+
+**Rule:**
+If the server doesn’t approve it → reject it.
+No exceptions.
+
+---
+
+## **2. Define Clear Business Rules and Enforce Them**
+
+You prevent logic flaws by **formally defining** what inputs are allowed.
+
+Examples:
+
+* Quantity must be: integer, > 0, ≤ stock
+* Price must be: ≥ 0
+* Transfer amount must be: > 0
+* Discount cannot exceed item price
+
+Then enforce these rules everywhere in the backend, not just in one function.
+
+---
+
+## **3. Check for Negative and Extreme Values Explicitly**
+
+Most business logic issues happen because devs **never expected negative values**.
+
+So you must add explicit checks:
+
+```
+if (quantity <= 0) reject();
+if (amount <= 0) reject();
+if (price < 0) reject();
+```
+
+And also test:
+
+* Zero
+* Extremely large numbers
+* Overflow values
+* Decimal where integer required
+
+These checks must be mandatory.
+
+---
+
+## **4. Never Rely on Hidden Fields or Client-Controlled Parameters**
+
+If the quantity, price, discount, or balance is coming from the client side, an attacker can modify it.
+
+Prevention:
+
+* Recalculate sensitive values on the server
+* Do not trust values like price, total, user role, or stock in user requests
+* Never trust business‑critical arithmetic sent from the browser
+
+---
+
+## **5. Use Centralized Validation and Business Logic Layers**
+
+Instead of random validation all over the app, build a **central rule engine** that handles:
+
+* Input validation
+* Data normalization
+* Business rules
+* Boundary checks
+
+This avoids the “one endpoint is strict, another is weak” problem.
+
+---
+
+## **6. Perform Logic-Aware Testing**
+
+SAST/DAST tools will **never** catch this type of bug.
+Prevention requires **human testing**, focusing on weird values.
+
+Your QA/security team must actively test:
+
+* Negative values
+* Zero
+* Big integers
+* Wrong data types
+* Abnormal lengths
+* Missing fields
+* Repeated requests
+* Out-of-order sequences
+
+This is mandatory for business logic security.
+
+---
+
+## **7. Log and Monitor Abnormal Input Behavior**
+
+If someone is trying:
+
+* large numbers
+* negative quantities
+* invalid formats
+* weird patterns
+
+It’s usually an attacker.
+
+Build monitoring that flags:
+
+* Negative input attempts
+* Overflow attempts
+* Rapid manipulation of parameters
+
+Then you can detect exploitation early.
+
+---
+
+## **8. Use Safe Arithmetic (Avoid Overflows & Wraparounds)**
+
+Languages like JavaScript, PHP, and C can behave weirdly with overflow or negative math.
+
+Use:
+
+* Safe integer libraries
+* Strict numeric boundaries
+* Database constraints (NOT NULL, CHECK > 0)
+
+DB-level constraints are a lifesaver.
+
+---
+
+## **9. Apply Strong Access Controls to Sensitive Actions**
+
+Even if input is valid, the action may not be.
+
+Example:
+
+* User shouldn’t update stock
+* User shouldn’t touch price
+* User shouldn’t modify discount
+
+Enforce authorization checks before processing data.
+
+---
+
+## **10. Implement Consistency Checks After Calculations**
+
+Even if something slips through, the system should verify:
+
+* Final price ≥ 0
+* Cart total ≥ 0
+* Balance never < 0
+* Inventory never < 0
+
+This ensures no “negative state” exists in the system.
+
+---
+
+# **The Core Prevention Logic**
+
+**Validate everything.
+Validate on the server.
+Reject anything weird.
+Define strict business rules and enforce them globally.
+Never assume the user behaves normally.**
+
+Attackers will always try:
+
+* negative values
+* huge numbers
+* out-of-range
+* unexpected data types
+
+Your job is to design the system so these inputs never break the logic.
+
