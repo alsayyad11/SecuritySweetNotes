@@ -48,12 +48,5 @@ Let’s take a concrete example from a vulnerable e-commerce lab:
 
 ---
 
-### Key Takeaways
-
-* **Client-side validation** is only for UX; it doesn’t secure your application.
-* **Server-side validation** is mandatory for any critical data (prices, quantities, permissions, workflows).
-* **Never trust user input**, even if it comes from your own frontend. Always validate and fetch critical values from the server-side logic.
-* Excessive trust in client-side controls can lead to **Business Logic Vulnerabilities**, which attackers can exploit to manipulate functionality.
-
 **Mitigation Example:**
 Instead of relying on the client to send the price, the server should fetch the price using the **product ID** from the database and calculate totals internally. That way, even if the user tampers with requests, the server-side logic ensures that invalid prices cannot be processed.
