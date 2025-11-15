@@ -241,22 +241,118 @@ This leads to:
 This is a severe business logic flaw with authentication impact.
 
 ---
+---
 
-# **5. Proper Fix**
+## How to Fix a Business Logic Vulnerability Like This (2FA Bypass)
 
-To prevent this:
+### 1. Bind the 2FA Flow to the Authenticated Session
 
-1. **Remove the verify parameter entirely**
-   The backend should determine the user from the session, not the request.
+The system should **never** use a request parameter (like `verify=carlos`) to decide the target account.
 
-2. **Enforce strict session binding**
+Instead:
 
-   ```
-   session.user = "wiener"
-   ```
+* After the user enters their username + password,
+* The backend should store the authenticated **user_id** in the **server-side session**,
+* Then 2FA verification must ALWAYS check the code **only** against the session’s user.
 
-3. **Rate-limit MFA attempts**
+So even if someone tries:
 
-4. **Use longer MFA codes**
+```
+POST /login2
+verify=carlos&mfa-code=1234
+```
 
-5. **Invalidate codes after several failed attempts**
+The backend should ignore `verify` completely and verify MFA for the logged-in user only.
+
+---
+
+### 2. Remove Any User Identity Parameters From Sensitive Flows
+
+Sensitive operations (login, password reset, 2FA, email change, etc.) must NOT rely on:
+
+* Query parameters
+* POST parameters
+* Hidden HTML inputs
+
+Instead, use:
+
+* Session data
+* Server-generated tokens tied to the user
+* State stored securely backend-side
+
+---
+
+### 3. Rate Limit and Lock Out MFA Attempts
+
+Even if logic is solid, brute forcing 2FA is still possible if codes are short.
+
+To mitigate:
+
+* Limit attempts (e.g., 5 per user per 10 minutes)
+* Add cooldowns
+* Invalidate the 2FA code after a few wrong tries
+* Log suspicious patterns
+
+This kills the attacker's ability to brute-force like you did in the lab.
+
+---
+
+### 4. Regenerate 2FA Codes ONLY After Successful Password Auth
+
+In the vulnerable flow, generating a new 2FA code for *any* user by just sending:
+
+```
+GET /login2?verify=carlos
+```
+
+is a massive flaw.
+
+Fix:
+
+* Only generate codes **after** password authentication.
+* Only generate for the user in session.
+* Never generate codes based on request parameters.
+
+---
+
+### 5. Validate All Login State Transitions
+
+Every step in login should follow this strict chain:
+
+1. User submits username + password
+2. Server verifies credentials
+3. Server stores user_id in the session
+4. User is redirected to `/login2`
+5. User submits MFA code
+6. Server verifies MFA code **for the session user**
+7. User gets logged in
+
+If any step can be triggered out of order, that’s a logic bug.
+
+---
+
+### 6. Don’t Leak Login Status via HTTP Responses
+
+In the lab, you could detect success via **302 redirects**.
+
+Fix:
+
+* Always return the same response for both valid and invalid MFA attempts.
+* Only redirect after full, successful authentication.
+
+This makes brute force attacks harder.
+
+---
+
+## Summary 
+
+To prevent this vulnerability:
+
+* Remove user-controlled identifiers (`verify=carlos`) from security flows
+* Tie the entire authentication flow to the **server session**
+* Enforce rate limiting and account lockout
+* Generate 2FA codes *after* password validation only
+* Return uniform HTTP responses
+* Validate state transitions strictly
+
+This moves the logic from **client-driven** to **server-controlled**, which is the whole point of secure business logic.
