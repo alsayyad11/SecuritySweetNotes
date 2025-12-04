@@ -4,7 +4,7 @@ A personal collection of notes, summaries, and tools for learning and working in
 This repository serves as a structured study hub and practical reference.
 
 [![repo-size](https://img.shields.io/github/repo-size/alsayyad11/SecuritySweetNotes)](https://github.com/alsayyad11/SecuritySweetNotes)
-[![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![license](https://img.shields.io/badge/license-alsayyad11-blue.svg)](./LICENSE)
 [![last-commit](https://img.shields.io/github/last-commit/alsayyad11/SecuritySweetNotes)](https://github.com/alsayyad11/SecuritySweetNotes/commits/main)
 [![stars](https://img.shields.io/github/stars/alsayyad11/SecuritySweetNotes?style=social)](https://github.com/alsayyad11/SecuritySweetNotes/stargazers)
 
