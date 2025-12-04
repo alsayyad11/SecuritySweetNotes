@@ -1,3 +1,4 @@
+
 # Cybersecurity Notes & Tools — Pintest Sweets
 A personal collection of notes, summaries, and tools for learning and working in cybersecurity (pentesting, red teaming, blue teaming, and web application security).  
 This repository serves as a structured study hub and practical reference.
@@ -30,5 +31,12 @@ It is designed to support consistent learning, practical exercises, and quick re
 - **Books, references & summaries:**  
   - [`books/`](https://github.com/alsayyad11/SecuritySweetNotes/tree/main/books)
 - **resources.md**: curated learning platforms and external sources.
+
+---
+
+---
+
+* Medium: [@alsayyad11](https://medium.com/@alsayyad11)
+* GitHub: [@alsayyad11](https://github.com/alsayyad11)
 
 ---
